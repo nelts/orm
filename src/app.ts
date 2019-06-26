@@ -16,6 +16,12 @@ export default (app: Plugin) => {
   const temp: SequelizeMap = {};
   let redis: RedisJSON;
 
+  app.on('ServerStopping', () => {
+    if (redis) {
+      redis.quit();
+    }
+  });
+
   app.on('ContextGuard', ctx => {
     ctx.sequelize = Object.freeze(sequelizes);
     ctx.redis = redis;

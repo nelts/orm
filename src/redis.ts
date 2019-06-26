@@ -41,4 +41,8 @@ export default class RedisJSON {
     // Multi command for efficiently all the keys at once
     await this.redisClient.multi(keys.map((k: string) => ['del', k])).exec();
   }
+
+  quit() {
+    this.redisClient.quit.call(this.redisClient);
+  }
 }
