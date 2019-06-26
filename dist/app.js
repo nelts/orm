@@ -10,6 +10,11 @@ exports.default = (app) => {
     const sequelizes = {};
     const temp = {};
     let redis;
+    app.on('ServerStopping', () => {
+        if (redis) {
+            redis.quit();
+        }
+    });
     app.on('ContextGuard', ctx => {
         ctx.sequelize = Object.freeze(sequelizes);
         ctx.redis = redis;

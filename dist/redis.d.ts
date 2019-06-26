@@ -9,4 +9,5 @@ export default class RedisJSON {
     exists(key: string): Promise<any>;
     delete(key: string): Promise<any>;
     clear(): Promise<void>;
+    quit(): void;
 }

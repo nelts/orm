@@ -31,5 +31,8 @@ class RedisJSON {
         const keys = await this.redisClient.keys.call(this.redisClient, `${this.prefix}*`);
         await this.redisClient.multi(keys.map((k) => ['del', k])).exec();
     }
+    quit() {
+        this.redisClient.quit.call(this.redisClient);
+    }
 }
 exports.default = RedisJSON;
