@@ -11,6 +11,7 @@ export function Cacheable(path: string){
     descriptor.value = function(...args: any[]) {
       const ctx: Context = this.ctx;
       const that = this;
+      if (!ctx.redis) throw new Error('@Cacheable must setup redis option.');
       return {
         // set data in redis
         async set(pathParams?: object, expire?:number) {

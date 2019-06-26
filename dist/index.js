@@ -13,6 +13,8 @@ function Cacheable(path) {
         descriptor.value = function (...args) {
             const ctx = this.ctx;
             const that = this;
+            if (!ctx.redis)
+                throw new Error('@Cacheable must setup redis option.');
             return {
                 async set(pathParams, expire) {
                     pathParams = pathParams || {};
