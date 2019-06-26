@@ -1,0 +1,33 @@
+{
+  "name": "@nelts/orm",
+  "version": "1.0.0",
+  "description": "nelts orm",
+  "main": "dist/index.js",
+  "source": "dist",
+  "scripts": {
+    "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --module=@nelts/nelts --base=. --max=1 --config=src/configs.ts",
+    "build": "rm -rf dist/ && tsc -d"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "author": "cevio",
+  "license": "MIT",
+  "dependencies": {
+    "@nelts/nelts": "^1.0.10",
+    "@types/bluebird": "^3.5.27",
+    "@types/ioredis": "^4.0.12",
+    "@types/validator": "^10.11.1",
+    "globby": "^9.2.0",
+    "ioredis": "^4.10.0",
+    "path-to-regexp": "^3.0.0",
+    "sequelize": "^5.8.12"
+  },
+  "devDependencies": {
+    "mysql2": "^1.6.5"
+  },
+  "peerDependencies": {
+    "mysql2": "^1.6.5"
+  }
+}
