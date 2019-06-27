@@ -15,7 +15,7 @@
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
-    "@nelts/nelts": "^1.0.10",
+    "@nelts/nelts": "^1.0.11",
     "@types/bluebird": "^3.5.27",
     "@types/ioredis": "^4.0.12",
     "@types/validator": "^10.11.1",
