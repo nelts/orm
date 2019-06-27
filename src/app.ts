@@ -47,20 +47,14 @@ export default (app: Plugin) => {
 
         if (temp[config.alias]) {
           if (!sequelizes[config.alias]) sequelizes[config.alias] = {};
-          const t = await sequelize.transaction();
-          const transates: Promise<any>[] = [];
           for (const table in temp[config.alias]) {
             const expo = temp[config.alias][table];
             if (expo.installer) {
               expo.installer(sequelize);
-              transates.push(expo.sync({ transaction: t }));
+              await expo.sync();
             }
             sequelizes[config.alias][table] = expo;
           }
-          await Promise.all(transates).then(() => t.commit()).catch(e => {
-            console.error(e);
-            return t.rollback();
-          });
           sequelizes[config.alias] = Object.freeze(sequelizes[config.alias]);
         }
       }
