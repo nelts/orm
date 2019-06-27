@@ -3,6 +3,13 @@ import * as sequelize from 'sequelize';
 import { Context } from '@nelts/nelts';
 import * as pathToRegexp from 'path-to-regexp';
 
+export interface CacheableInterface {
+  set(pathParams?: object, expire?:number): Promise<any>;
+  get(pathParams?: object, expire?:number): Promise<any>;
+  delete(pathParams?: object): Promise<void>;
+  invoke(): Promise<any>;
+}
+
 export function Cacheable(path: string){
   const toPathRegexp = pathToRegexp.compile(path);
   return (target: any, property: string, descriptor: PropertyDescriptor) => {
