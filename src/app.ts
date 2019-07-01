@@ -4,7 +4,7 @@ import { Sequelize, Model } from 'sequelize';
 import globby from 'globby';
 import * as Redis from 'ioredis';
 import RedisJSON from './redis';
-import { PluginProps } from './index';
+import { PluginProps, SequelizeModelInterface } from './index';
 
 export default (app: Plugin) => {
   const tableInits: string[] = [];
@@ -60,7 +60,7 @@ export default (app: Plugin) => {
     files.forEach(file => {
       const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
       const filepath = path.resolve(cwd, file);
-      const fileExports = Require<typeof Model>(filepath);
+      const fileExports = Require<SequelizeModelInterface>(filepath);
       if (plugin._tables[tablename]) throw new Error(`table<${tablename}> is already exist on database`);
       plugin._tables[tablename] = fileExports;
     });

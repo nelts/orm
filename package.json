@@ -1,6 +1,6 @@
 {
   "name": "@nelts/orm",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "nelts orm",
   "main": "dist/index.js",
   "source": "dist",

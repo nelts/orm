@@ -6,6 +6,7 @@ export declare class OrmContext<T = any, U = any> extends Context {
         [name: string]: sequelize.Model<T, U>;
     };
 }
+export declare type SequelizeModelInterface<T = any, U = any> = (new () => sequelize.Model<T, U>) & typeof sequelize.Model;
 export declare type SequelizeInitConfigs = {
     database: string;
     username: string;
