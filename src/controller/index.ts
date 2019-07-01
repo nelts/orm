@@ -10,8 +10,8 @@ export default class IndexController extends Component.Controller {
   @Controller.Get()
   async HOME(ctx: Context) {
     const service = new this.service.IndexService(ctx);
-    // const result = await service.valid().invoke();
-    const result = await service.valid().get({ id: 234 }, 10000);
+    const result = await service.get();
+    // const result = await service.valid().get({ id: 234 }, 10000);
     ctx.body = result;
   }
 }

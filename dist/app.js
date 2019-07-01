@@ -7,47 +7,30 @@ const globby_1 = require("globby");
 const Redis = require("ioredis");
 const redis_1 = require("./redis");
 exports.default = (app) => {
-    const sequelizes = {};
-    const temp = {};
+    const tableInits = [];
     let redis;
-    app.on('ServerStopping', () => {
-        if (redis) {
-            redis.quit();
-        }
-    });
+    app.on('ServerStopping', () => redis && redis.quit());
     app.on('ContextGuard', ctx => {
-        ctx.sequelize = Object.freeze(sequelizes);
-        ctx.redis = redis;
+        Object.defineProperties(ctx, {
+            cache: { get() { return this.app._caches; } },
+            dbo: { get() { return this.app._tables; } },
+            redis: { get() { return redis; } },
+        });
     });
     app.on('props', async (configs) => {
         if (configs.sequelize) {
-            const sequelizeConfigs = !Array.isArray(configs.sequelize)
-                ? [configs.sequelize]
-                : configs.sequelize;
-            for (let i = 0; i < sequelizeConfigs.length; i++) {
-                const config = sequelizeConfigs[i];
-                const sequelize = new sequelize_1.Sequelize(config.database, config.username, config.password, {
-                    dialect: config.dialect,
-                    port: config.port,
-                    host: config.host,
-                    pool: config.pool,
-                    retry: config.retry,
-                    storage: config.storage,
-                });
-                if (temp[config.alias]) {
-                    if (!sequelizes[config.alias])
-                        sequelizes[config.alias] = {};
-                    for (const table in temp[config.alias]) {
-                        const expo = temp[config.alias][table];
-                        if (expo.installer) {
-                            expo.installer(sequelize);
-                            await expo.sync();
-                        }
-                        sequelizes[config.alias][table] = expo;
-                    }
-                    sequelizes[config.alias] = Object.freeze(sequelizes[config.alias]);
+            const database = new sequelize_1.Sequelize(configs.sequelize.database, configs.sequelize.username, configs.sequelize.password, configs.sequelize.options);
+            for (const i in app._tables) {
+                if (tableInits.indexOf(i) > -1)
+                    continue;
+                const model = app._tables[i];
+                if (typeof model.installer === 'function') {
+                    model.installer(database);
+                    await model.sync();
                 }
+                tableInits.push(i);
             }
+            app._tables = Object.freeze(app._tables);
         }
         if (configs.redis) {
             let reidsClient;
@@ -72,21 +55,18 @@ exports.default = (app) => {
             return;
         const cwd = plugin.source;
         const files = await globby_1.default([
-            `sequelize/*/*.ts`,
-            'sequelize/*/*.js',
-            '!sequelize/*/*.d.ts',
+            `sequelize/*.ts`,
+            'sequelize/*.js',
+            '!sequelize/*.d.ts',
         ], { cwd });
+        plugin._tables = {};
         files.forEach(file => {
-            const ap = file.split('/');
-            const database = ap[1];
-            const tablename = path.basename(ap[2], path.extname(ap[2]));
+            const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
             const filepath = path.resolve(cwd, file);
             const fileExports = nelts_1.Require(filepath);
-            if (!temp[database])
-                temp[database] = {};
-            if (temp[database][tablename])
-                throw new Error(`${database}.${tablename} is exists.`);
-            temp[database][tablename] = fileExports;
+            if (plugin._tables[tablename])
+                throw new Error(`table<${tablename}> is already exist on database`);
+            plugin._tables[tablename] = fileExports;
         });
     });
 };

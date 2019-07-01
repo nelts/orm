@@ -1,63 +1,42 @@
 import * as path from 'path';
 import { Plugin, Require } from '@nelts/nelts';
-import { Sequelize, PoolOptions, RetryOptions, Dialect, Model } from 'sequelize';
+import { Sequelize, Model } from 'sequelize';
 import globby from 'globby';
 import * as Redis from 'ioredis';
 import RedisJSON from './redis';
-import { Transaction } from 'sequelize';
-
-type SequelizeMap<T = any> = { 
-  [name: string]: {
-    [name: string]: T
-  }
-}
+import { PluginProps } from './index';
 
 export default (app: Plugin) => {
-  const sequelizes: SequelizeMap<Model> = {};
-  const temp: SequelizeMap = {};
+  const tableInits: string[] = [];
   let redis: RedisJSON;
 
-  app.on('ServerStopping', () => {
-    if (redis) {
-      redis.quit();
-    }
-  });
-
+  app.on('ServerStopping', () => redis && redis.quit());
   app.on('ContextGuard', ctx => {
-    ctx.sequelize = Object.freeze(sequelizes);
-    ctx.redis = redis;
+    Object.defineProperties(ctx, {
+      cache: { get() { return this.app._caches; } },
+      dbo: { get() { return this.app._tables; } },
+      redis: { get() { return redis; } },
+    });
   });
 
-  app.on('props', async configs => {
+  app.on('props', async (configs: PluginProps) => {
     if (configs.sequelize) {
-      const sequelizeConfigs = !Array.isArray(configs.sequelize) 
-        ? [configs.sequelize] 
-        : configs.sequelize;
-
-      for (let i = 0; i < sequelizeConfigs.length; i++) {
-        const config = sequelizeConfigs[i];
-        const sequelize = new Sequelize(config.database, config.username, config.password, {
-          dialect: config.dialect as Dialect,
-          port: config.port,
-          host: config.host,
-          pool: config.pool as PoolOptions,
-          retry: config.retry as RetryOptions,
-          storage: config.storage,
-        });
-
-        if (temp[config.alias]) {
-          if (!sequelizes[config.alias]) sequelizes[config.alias] = {};
-          for (const table in temp[config.alias]) {
-            const expo = temp[config.alias][table];
-            if (expo.installer) {
-              expo.installer(sequelize);
-              await expo.sync();
-            }
-            sequelizes[config.alias][table] = expo;
-          }
-          sequelizes[config.alias] = Object.freeze(sequelizes[config.alias]);
+      const database = new Sequelize(
+        configs.sequelize.database, 
+        configs.sequelize.username, 
+        configs.sequelize.password, 
+        configs.sequelize.options,
+      );
+      for (const i in app._tables) {
+        if (tableInits.indexOf(i) > -1) continue;
+        const model: any = app._tables[i];
+        if (typeof model.installer === 'function') {
+          model.installer(database);
+          await model.sync();
         }
+        tableInits.push(i);
       }
+      app._tables = Object.freeze(app._tables);
     }
     if (configs.redis) {
       let reidsClient: Redis.Redis | Redis.Cluster;
@@ -73,6 +52,7 @@ export default (app: Plugin) => {
         reidsClient = new Redis(configs.redis);
       }
       redis = new RedisJSON(reidsClient, configs.redis_prefix);
+      // app._caches = Object.freeze(app._caches);
     }
   });
 
@@ -80,19 +60,34 @@ export default (app: Plugin) => {
     if (app.name !== plugin.name && !plugin.isDepended(app.name)) return;
     const cwd = plugin.source;
     const files = await globby([
-      `sequelize/*/*.ts`, 
-      'sequelize/*/*.js', 
-      '!sequelize/*/*.d.ts',
+      `sequelize/*.ts`, 
+      'sequelize/*.js', 
+      '!sequelize/*.d.ts',
     ], { cwd });
+
+    plugin._tables = {};
     files.forEach(file => {
-      const ap = file.split('/');
-      const database = ap[1];
-      const tablename = path.basename(ap[2], path.extname(ap[2]));
+      const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
       const filepath = path.resolve(cwd, file);
-      const fileExports = Require(filepath);
-      if (!temp[database]) temp[database] = {};
-      if (temp[database][tablename]) throw new Error(`${database}.${tablename} is exists.`);
-      temp[database][tablename] = fileExports;
-    })
+      const fileExports = Require<typeof Model>(filepath);
+      if (plugin._tables[tablename]) throw new Error(`table<${tablename}> is already exist on database`);
+      plugin._tables[tablename] = fileExports;
+    });
   });
+
+  // app.addCompiler(async (plugin: Plugin) => {
+  //   if (app.name !== plugin.name && !plugin.isDepended(app.name)) return;
+  //   const cwd = plugin.source;
+  //   const files = await globby([
+  //     `cache/**/*.ts`, 
+  //     'cache/**/*.js', 
+  //     '!cache/**/*.d.ts',
+  //   ], { cwd });
+  //   plugin._caches = {};
+  //   files.forEach(file => {
+  //     const filepath = path.resolve(cwd, file);
+  //     const fileExports = Require(filepath);
+  //     if (fileExports.name) plugin._caches[fileExports.name] = fileExports;
+  //   })
+  // });
 }

@@ -3,6 +3,22 @@ import * as sequelize from 'sequelize';
 import { Context } from '@nelts/nelts';
 import * as pathToRegexp from 'path-to-regexp';
 
+export type SequelizeInitConfigs = {
+  database: string, 
+  username: string,
+  password: string,
+  options: sequelize.Options,
+}
+
+export type PluginProps = {
+  sequelize?: SequelizeInitConfigs,
+  redis?: boolean | string | {
+    host: string,
+    port: number
+  },
+  redis_prefix?: string,
+}
+
 export interface CacheableInterface {
   set(pathParams?: object, expire?:number): Promise<any>;
   get(pathParams?: object, expire?:number): Promise<any>;
@@ -10,7 +26,7 @@ export interface CacheableInterface {
   invoke(): Promise<any>;
 }
 
-export function Cacheable(path: string){
+export function Cacheable(path: string) {
   const toPathRegexp = pathToRegexp.compile(path);
   return (target: any, property: string, descriptor: PropertyDescriptor) => {
     const callback = descriptor.value;
@@ -54,17 +70,4 @@ export function Cacheable(path: string){
     }
     descriptor.value._rewrited = true;
   }
-} 
-
-type sequelizeFieldValues = {
-  dataValues: object,
-  [name: string]: any,
-}
-
-export function getSequelizeFieldValues(result: sequelizeFieldValues[]) {
-  return result.map((res: sequelizeFieldValues) => res.dataValues);
-}
-
-export {
-  sequelize
 }

@@ -17,12 +17,10 @@ export default async (app: Plugin) => {
     await app.getComponent('@nelts/orm').props({
       // sequelize configs: http://docs.sequelizejs.com/manual/dialects.html
       sequelize: {
-        alias: configs.sequelize.alias,
         database: configs.sequelize.database,
         username: configs.sequelize.username,
         password: configs.sequelize.password,
-        dialect: configs.sequelize.dialect,
-        host: configs.sequelize.host,
+        options: configs.sequelize.options,
       },
       // local redis: true
       // object redis: { port, host }
@@ -89,7 +87,7 @@ Redis是存在于 `ctx.redis` 上。
 
 ```ts
 import { Component, Context } from '@nelts/nelts';
-import { Cacheable, getSequelizeFieldValues } from '../index';
+import { Cacheable, CacheableInterface } from '../index';
 export default class IndexService extends Component.Service {
   constructor(ctx: Context) {
     super(ctx);
@@ -97,9 +95,14 @@ export default class IndexService extends Component.Service {
 
   @Cacheable('/test/:id(\\d+)')
   async valid() {
-    return getSequelizeFieldValues(await this.ctx.sequelize.cpm.maintainer.findAll({
+    return await this.ctx.dbomaintainer.findAll({
       attributes: ['id', 'pid', 'account', 'ctime']
-    }));
+    });
+  }
+
+  async get() {
+    const obj: CacheableInterface = await this.valid();
+    return await obj.get({ id: 123 });
   }
 }
 ```
@@ -109,10 +112,11 @@ export default class IndexService extends Component.Service {
 ```ts
 // eg: in controller
 const service = new this.service.IndexService(ctx);
-const result = await service.valid().invoke();
-const result = await service.valid().set({ id: 234 }, 10000);
-const result = await service.valid().get({ id: 234 }, 10000);
-await service.valid().delete({ id: 234 });
+const obj: CacheableInterface = await service.valid();
+const result = await obj.invoke();
+const result = await obj.set({ id: 234 }, 10000);
+const result = await obj.get({ id: 234 }, 10000);
+await obj.delete({ id: 234 });
 ```
 
 ## License

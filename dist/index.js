@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
-const sequelize = require("sequelize");
-exports.sequelize = sequelize;
 const pathToRegexp = require("path-to-regexp");
 function Cacheable(path) {
     const toPathRegexp = pathToRegexp.compile(path);
@@ -49,7 +47,3 @@ function Cacheable(path) {
     };
 }
 exports.Cacheable = Cacheable;
-function getSequelizeFieldValues(result) {
-    return result.map((res) => res.dataValues);
-}
-exports.getSequelizeFieldValues = getSequelizeFieldValues;
