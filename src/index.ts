@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import * as sequelize from 'sequelize';
-import { Context } from '@nelts/nelts';
+import { Context, CustomExtendableType } from '@nelts/nelts';
 import * as pathToRegexp from 'path-to-regexp';
+import RedisJSON from './redis';
 
-export class OrmContext<T = any, U = any> extends Context {
-  public readonly dbo: {
-    [name: string]: sequelize.Model<T, U>;
-  }
+export class OrmContext<T = {}> extends Context {
+  public readonly dbo: CustomExtendableType<T>;
+  public readonly redis: RedisJSON;
 }
 
 export type SequelizeModelInterface<T = any, U = any> = (new () => sequelize.Model<T, U>) & typeof sequelize.Model;
