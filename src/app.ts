@@ -27,16 +27,7 @@ export default (app: Plugin) => {
         configs.sequelize.password, 
         configs.sequelize.options,
       );
-      for (const i in app._tables) {
-        if (tableInits.indexOf(i) > -1) continue;
-        const model: any = app._tables[i];
-        if (typeof model.installer === 'function') {
-          model.installer(database);
-          await model.sync();
-        }
-        tableInits.push(i);
-      }
-      app._tables = Object.freeze(app._tables);
+      await app.root.broadcast('DBOINIT', database);
     }
     if (configs.redis) {
       let reidsClient: Redis.Redis | Redis.Cluster;
@@ -66,6 +57,7 @@ export default (app: Plugin) => {
     ], { cwd });
 
     plugin._tables = {};
+
     files.forEach(file => {
       const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
       const filepath = path.resolve(cwd, file);
@@ -73,6 +65,19 @@ export default (app: Plugin) => {
       if (plugin._tables[tablename]) throw new Error(`table<${tablename}> is already exist on database`);
       plugin._tables[tablename] = fileExports;
     });
+
+    plugin.on('DBOINIT', async (database: Sequelize) => {
+      for (const i in plugin._tables) {
+        if (tableInits.indexOf(i) > -1) continue;
+        const model: any = plugin._tables[i];
+        if (typeof model.installer === 'function') {
+          model.installer(database);
+          await model.sync();
+        }
+        tableInits.push(i);
+      }
+      plugin._tables = Object.freeze(plugin._tables);
+    })
   });
 
   // app.addCompiler(async (plugin: Plugin) => {
