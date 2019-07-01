@@ -1,7 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
+const nelts_1 = require("@nelts/nelts");
 const pathToRegexp = require("path-to-regexp");
+class OrmContext extends nelts_1.Context {
+}
+exports.OrmContext = OrmContext;
 function Cacheable(path) {
     const toPathRegexp = pathToRegexp.compile(path);
     return (target, property, descriptor) => {

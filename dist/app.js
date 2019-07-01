@@ -12,7 +12,6 @@ exports.default = (app) => {
     app.on('ServerStopping', () => redis && redis.quit());
     app.on('ContextGuard', ctx => {
         Object.defineProperties(ctx, {
-            cache: { get() { return this.app._caches; } },
             dbo: { get() { return this.app._tables; } },
             redis: { get() { return redis; } },
         });

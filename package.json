@@ -1,6 +1,6 @@
 {
   "name": "@nelts/orm",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "nelts orm",
   "main": "dist/index.js",
   "source": "dist",
@@ -8,6 +8,7 @@
     "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --module=@nelts/nelts --base=. --max=1 --config=src/configs.ts",
     "build": "rm -rf dist/ && tsc -d"
   },
+  "types": "src/index.d.ts",
   "files": [
     "src",
     "dist"

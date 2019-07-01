@@ -1,5 +1,11 @@
 import 'reflect-metadata';
 import * as sequelize from 'sequelize';
+import { Context } from '@nelts/nelts';
+export declare class OrmContext<T = any, U = any> extends Context {
+    readonly dbo: {
+        [name: string]: sequelize.Model<T, U>;
+    };
+}
 export declare type SequelizeInitConfigs = {
     database: string;
     username: string;

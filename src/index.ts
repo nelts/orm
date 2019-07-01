@@ -3,6 +3,12 @@ import * as sequelize from 'sequelize';
 import { Context } from '@nelts/nelts';
 import * as pathToRegexp from 'path-to-regexp';
 
+export class OrmContext<T = any, U = any> extends Context {
+  public readonly dbo: {
+    [name: string]: sequelize.Model<T, U>;
+  }
+}
+
 export type SequelizeInitConfigs = {
   database: string, 
   username: string,
