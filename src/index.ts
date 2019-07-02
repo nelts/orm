@@ -3,6 +3,7 @@ import * as sequelize from 'sequelize';
 import { Context, CustomExtendableType } from '@nelts/nelts';
 import * as pathToRegexp from 'path-to-regexp';
 import RedisJSON from './redis';
+import { WorkerPlugin } from '@nelts/nelts';
 
 export class OrmContext<T = {}> extends Context {
   public readonly dbo: CustomExtendableType<T>;
@@ -78,4 +79,8 @@ export function Cacheable(path: string) {
     }
     descriptor.value._rewrited = true;
   }
+}
+
+export class OrmWorkerPlugin extends WorkerPlugin {
+  public _tables: {[name: string]: SequelizeModelInterface }
 }

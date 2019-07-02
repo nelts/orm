@@ -1,9 +1,9 @@
-import { Component, Plugin, Decorator, Context } from '@nelts/nelts';
+import { Component, WorkerPlugin, Decorator, Context } from '@nelts/nelts';
 const Controller = Decorator.Controller;
 
 @Controller.Prefix()
 export default class IndexController extends Component.Controller {
-  constructor(app: Plugin) {
+  constructor(app: WorkerPlugin) {
     super(app);
   }
 

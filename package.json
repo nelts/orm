@@ -1,9 +1,9 @@
 {
   "name": "@nelts/orm",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "nelts orm",
   "main": "dist/index.js",
-  "source": "dist",
+  "source": "src",
   "scripts": {
     "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --module=@nelts/nelts --base=. --max=1 --config=src/configs.ts",
     "build": "rm -rf dist/ && tsc -d"
@@ -15,7 +15,7 @@
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
-    "@nelts/nelts": "^1.0.21",
+    "@nelts/nelts": "^1.0.24",
     "@types/bluebird": "^3.5.27",
     "@types/ioredis": "^4.0.12",
     "@types/validator": "^10.11.1",

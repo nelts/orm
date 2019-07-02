@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { Plugin, Require } from '@nelts/nelts';
-import { Sequelize, Model } from 'sequelize';
+import { WorkerPlugin, Require } from '@nelts/nelts';
+import { Sequelize } from 'sequelize';
 import globby from 'globby';
 import * as Redis from 'ioredis';
 import RedisJSON from './redis';
-import { PluginProps, SequelizeModelInterface } from './index';
+import { PluginProps, SequelizeModelInterface, OrmWorkerPlugin } from './index';
 
-export default (app: Plugin) => {
+export default (app: WorkerPlugin) => {
   const tableInits: string[] = [];
   let redis: RedisJSON;
 
@@ -46,7 +46,7 @@ export default (app: Plugin) => {
     }
   });
 
-  app.addCompiler(async (plugin: Plugin) => {
+  app.addCompiler(async (plugin: OrmWorkerPlugin) => {
     if (app.name !== plugin.name && !plugin.isDepended(app.name)) return;
     const cwd = plugin.source;
     const files = await globby([
