@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const nelts_1 = require("@nelts/nelts");
 const pathToRegexp = require("path-to-regexp");
+const nelts_2 = require("@nelts/nelts");
 class OrmContext extends nelts_1.Context {
 }
 exports.OrmContext = OrmContext;
@@ -51,3 +52,6 @@ function Cacheable(path) {
     };
 }
 exports.Cacheable = Cacheable;
+class OrmWorkerPlugin extends nelts_2.WorkerPlugin {
+}
+exports.OrmWorkerPlugin = OrmWorkerPlugin;

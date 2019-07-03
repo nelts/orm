@@ -2,9 +2,11 @@ import 'reflect-metadata';
 import * as sequelize from 'sequelize';
 import { Context, CustomExtendableType } from '@nelts/nelts';
 import RedisJSON from './redis';
+import { WorkerPlugin } from '@nelts/nelts';
 export declare class OrmContext<T = {}> extends Context {
     readonly dbo: CustomExtendableType<T>;
     readonly redis: RedisJSON;
+    readonly sequelize: sequelize.Sequelize;
 }
 export declare type SequelizeModelInterface<T = any, U = any> = (new () => sequelize.Model<T, U>) & typeof sequelize.Model;
 export declare type SequelizeInitConfigs = {
@@ -28,3 +30,8 @@ export interface CacheableInterface {
     invoke(): Promise<any>;
 }
 export declare function Cacheable(path: string): (target: any, property: string, descriptor: PropertyDescriptor) => void;
+export declare class OrmWorkerPlugin extends WorkerPlugin {
+    _tables: {
+        [name: string]: SequelizeModelInterface;
+    };
+}

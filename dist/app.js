@@ -7,6 +7,7 @@ const globby_1 = require("globby");
 const Redis = require("ioredis");
 const redis_1 = require("./redis");
 exports.default = (app) => {
+    let sequelize;
     const tableInits = [];
     let redis;
     app.on('ServerStopping', () => redis && redis.quit());
@@ -14,12 +15,13 @@ exports.default = (app) => {
         Object.defineProperties(ctx, {
             dbo: { get() { return this.app._tables; } },
             redis: { get() { return redis; } },
+            sequelize: { get() { return sequelize; } }
         });
     });
     app.on('props', async (configs) => {
         if (configs.sequelize) {
-            const database = new sequelize_1.Sequelize(configs.sequelize.database, configs.sequelize.username, configs.sequelize.password, configs.sequelize.options);
-            await app.root.broadcast('DBOINIT', database);
+            sequelize = new sequelize_1.Sequelize(configs.sequelize.database, configs.sequelize.username, configs.sequelize.password, configs.sequelize.options);
+            await app.root.broadcast('DBOINIT', sequelize);
         }
         if (configs.redis) {
             let reidsClient;
