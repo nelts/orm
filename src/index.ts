@@ -8,6 +8,7 @@ import { WorkerPlugin } from '@nelts/nelts';
 export class OrmContext<T = {}> extends Context {
   public readonly dbo: CustomExtendableType<T>;
   public readonly redis: RedisJSON;
+  public readonly sequelize: sequelize.Sequelize;
 }
 
 export type SequelizeModelInterface<T = any, U = any> = (new () => sequelize.Model<T, U>) & typeof sequelize.Model;

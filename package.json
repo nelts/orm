@@ -1,6 +1,6 @@
 {
   "name": "@nelts/orm",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "nelts orm",
   "main": "dist/index.js",
   "source": "dist",
@@ -15,14 +15,14 @@
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
-    "@nelts/nelts": "^1.0.24",
+    "@nelts/nelts": "^1.0.26",
     "@types/bluebird": "^3.5.27",
     "@types/ioredis": "^4.0.12",
     "@types/validator": "^10.11.1",
     "globby": "^9.2.0",
-    "ioredis": "^4.10.0",
+    "ioredis": "^4.11.1",
     "path-to-regexp": "^3.0.0",
-    "sequelize": "^5.9.0"
+    "sequelize": "^5.9.2"
   },
   "devDependencies": {
     "mysql2": "^1.6.5"

@@ -7,6 +7,7 @@ import RedisJSON from './redis';
 import { PluginProps, SequelizeModelInterface, OrmWorkerPlugin } from './index';
 
 export default (app: WorkerPlugin) => {
+  let sequelize: Sequelize;
   const tableInits: string[] = [];
   let redis: RedisJSON;
 
@@ -15,18 +16,19 @@ export default (app: WorkerPlugin) => {
     Object.defineProperties(ctx, {
       dbo: { get() { return this.app._tables; } },
       redis: { get() { return redis; } },
+      sequelize: { get() { return sequelize; } }
     });
   });
 
   app.on('props', async (configs: PluginProps) => {
     if (configs.sequelize) {
-      const database = new Sequelize(
+      sequelize = new Sequelize(
         configs.sequelize.database, 
         configs.sequelize.username, 
         configs.sequelize.password, 
         configs.sequelize.options,
       );
-      await app.root.broadcast('DBOINIT', database);
+      await app.root.broadcast('DBOINIT', sequelize);
     }
     if (configs.redis) {
       let reidsClient: Redis.Redis | Redis.Cluster;
