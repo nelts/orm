@@ -1,6 +1,6 @@
 {
   "name": "@nelts/orm",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "nelts orm",
   "main": "dist/index.js",
   "source": "dist",
@@ -15,7 +15,7 @@
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
-    "@nelts/nelts": "^1.0.26",
+    "@nelts/nelts": "^1.0.27",
     "@types/bluebird": "^3.5.27",
     "@types/ioredis": "^4.0.12",
     "@types/validator": "^10.11.1",
