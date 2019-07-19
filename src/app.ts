@@ -57,27 +57,27 @@ export default (app: OrmWorkerPlugin) => {
       '!sequelize/*.d.ts',
     ], { cwd });
 
-    plugin._tables = {};
+    const tables: { [name: string]: SequelizeModelInterface } = {};
 
     files.forEach(file => {
       const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
       const filepath = path.resolve(cwd, file);
       const fileExports = Require<SequelizeModelInterface>(filepath);
-      if (plugin._tables[tablename]) throw new Error(`table<${tablename}> is already exist on database`);
-      plugin._tables[tablename] = fileExports;
+      if (tables[tablename]) throw new Error(`table<${tablename}> is already exist on database`);
+      tables[tablename] = fileExports;
     });
 
     plugin.on('DBOINIT', async (database: Sequelize) => {
-      for (const i in plugin._tables) {
+      for (const i in tables) {
         if (tableInits.indexOf(i) > -1) continue;
-        const model: any = plugin._tables[i];
+        const model: any = tables[i];
         if (typeof model.installer === 'function') {
           model.installer(database);
           await model.sync();
         }
         tableInits.push(i);
       }
-      plugin._tables = Object.freeze(plugin._tables);
+      plugin._tables = Object.freeze(tables);
     })
   });
 

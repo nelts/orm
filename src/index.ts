@@ -5,11 +5,9 @@ import * as pathToRegexp from 'path-to-regexp';
 import RedisJSON from './redis';
 import { WorkerPlugin } from '@nelts/nelts';
 
-export interface OrmWorkerPlugin<T = {}> extends WorkerPlugin {
-  _tables: CustomExtendableType<T>;
-}
+export interface OrmWorkerPlugin extends WorkerPlugin {};
 
-export class OrmContext<T = {}, U = {}> extends Context<OrmWorkerPlugin<U>> {
+export class OrmContext<T = {}> extends Context<OrmWorkerPlugin> {
   public readonly dbo: CustomExtendableType<T>;
   public readonly redis: RedisJSON;
   public readonly sequelize: sequelize.Sequelize;

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const nelts_1 = require("@nelts/nelts");
 const pathToRegexp = require("path-to-regexp");
+;
 class OrmContext extends nelts_1.Context {
 }
 exports.OrmContext = OrmContext;

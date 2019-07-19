@@ -3,10 +3,9 @@ import * as sequelize from 'sequelize';
 import { Context, CustomExtendableType } from '@nelts/nelts';
 import RedisJSON from './redis';
 import { WorkerPlugin } from '@nelts/nelts';
-export interface OrmWorkerPlugin<T = {}> extends WorkerPlugin {
-    _tables: CustomExtendableType<T>;
+export interface OrmWorkerPlugin extends WorkerPlugin {
 }
-export declare class OrmContext<T = {}, U = {}> extends Context<OrmWorkerPlugin<U>> {
+export declare class OrmContext<T = {}> extends Context<OrmWorkerPlugin> {
     readonly dbo: CustomExtendableType<T>;
     readonly redis: RedisJSON;
     readonly sequelize: sequelize.Sequelize;

@@ -50,27 +50,27 @@ exports.default = (app) => {
             'sequelize/*.js',
             '!sequelize/*.d.ts',
         ], { cwd });
-        plugin._tables = {};
+        const tables = {};
         files.forEach(file => {
             const tablename = file.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
             const filepath = path.resolve(cwd, file);
             const fileExports = nelts_1.Require(filepath);
-            if (plugin._tables[tablename])
+            if (tables[tablename])
                 throw new Error(`table<${tablename}> is already exist on database`);
-            plugin._tables[tablename] = fileExports;
+            tables[tablename] = fileExports;
         });
         plugin.on('DBOINIT', async (database) => {
-            for (const i in plugin._tables) {
+            for (const i in tables) {
                 if (tableInits.indexOf(i) > -1)
                     continue;
-                const model = plugin._tables[i];
+                const model = tables[i];
                 if (typeof model.installer === 'function') {
                     model.installer(database);
                     await model.sync();
                 }
                 tableInits.push(i);
             }
-            plugin._tables = Object.freeze(plugin._tables);
+            plugin._tables = Object.freeze(tables);
         });
     });
 };
