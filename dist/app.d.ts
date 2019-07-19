@@ -1,3 +1,3 @@
-import { WorkerPlugin } from '@nelts/nelts';
-declare const _default: (app: WorkerPlugin) => void;
+import { OrmWorkerPlugin } from './index';
+declare const _default: (app: OrmWorkerPlugin<{}>) => void;
 export default _default;

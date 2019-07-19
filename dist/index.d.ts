@@ -3,7 +3,10 @@ import * as sequelize from 'sequelize';
 import { Context, CustomExtendableType } from '@nelts/nelts';
 import RedisJSON from './redis';
 import { WorkerPlugin } from '@nelts/nelts';
-export declare class OrmContext<T = {}> extends Context {
+export interface OrmWorkerPlugin<T = {}> extends WorkerPlugin {
+    _tables: CustomExtendableType<T>;
+}
+export declare class OrmContext<T = {}, U = {}> extends Context<OrmWorkerPlugin<U>> {
     readonly dbo: CustomExtendableType<T>;
     readonly redis: RedisJSON;
     readonly sequelize: sequelize.Sequelize;
@@ -29,9 +32,4 @@ export interface CacheableInterface {
     delete(pathParams?: object): Promise<void>;
     invoke(): Promise<any>;
 }
-export declare function Cacheable(path: string): (target: any, property: string, descriptor: PropertyDescriptor) => void;
-export declare class OrmWorkerPlugin extends WorkerPlugin {
-    _tables: {
-        [name: string]: SequelizeModelInterface;
-    };
-}
+export declare function Cacheable(path: string): MethodDecorator;
