@@ -7,7 +7,7 @@ import { WorkerPlugin } from '@nelts/nelts';
 
 export interface OrmWorkerPlugin extends WorkerPlugin {};
 
-export class OrmContext<T = {}> extends Context<OrmWorkerPlugin> {
+export class OrmContext<M extends OrmWorkerPlugin, T = {}> extends Context<M> {
   public readonly dbo: CustomExtendableType<T>;
   public readonly redis: RedisJSON;
   public readonly sequelize: sequelize.Sequelize;
